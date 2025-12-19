@@ -157,7 +157,7 @@
 <script>
 const suits = ['♠', '♣', '♥', '♦'];
 const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-const MAX_HP = 30; // Define max HP
+const MAX_HP = 20; // Define max HP
 
 let playerHp;
 let equippedWeapon;
@@ -289,9 +289,9 @@ function playCard(cardIndex) {
                 } else {
                     damage = card.value - equippedWeapon.value;
                     gameMessage = `${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
-                    gameMessage += ` 武器(${equippedWeapon.suit}${equippedWeapon.rank})が壊れた。`;
-                    equippedWeapon = null;
                 }
+                gameMessage += ` 武器(${equippedWeapon.suit}${equippedWeapon.rank})が壊れた。`; // Weapon breaks every time an enemy is fought while equipped
+                equippedWeapon = null;
             } else {
                 gameMessage = `${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
             }
