@@ -218,6 +218,7 @@
                 <li><strong>♥ (回復):</strong> HPを回復します。</li>
                 <li><strong>♦ (武器):</strong> 装備して敵からのダメージを防ぎます。</li>
                 <li><strong>🃏 (ジョーカー):</strong> 場にある他のカードを全て消し去ります。</li>
+                <li><strong>♠Q (呪いのカード):</strong> 戦うを選択すると、戦闘前にHP-1と武器破壊のペナルティを受けます。</li>
                 <li><strong>マリガン:</strong> HPの半分をコストに、場の手札を全て引き直します。</li>
             </ul>
         </div>
@@ -437,21 +438,36 @@ function playCard(cardIndex) {
     if (playerHp <= 0 || !hand[cardIndex]) return;
     const card = hand.splice(cardIndex, 1)[0];
 
+    // Cursed card check
+    if (card.suit === '♠' && card.rank === 'Q') {
+        let curseMessage = "呪いのカードだ！ ";
+        playerHp -= 1; // Curse penalty: lose 1 HP
+        if (equippedWeapon) {
+            equippedWeapon = null; // Curse penalty: destroy weapon
+            curseMessage += "武器が壊され、HPを1失った！";
+        } else {
+            curseMessage += "呪いでHPを1失った！";
+        }
+        gameMessage = curseMessage;
+        // The card is still an enemy, so fall through to combat after curse is applied
+    }
+
+
     switch (card.suit) {
         case '♠': case '♣':
             let damage = card.value;
             if (equippedWeapon) {
                 if (card.value <= equippedWeapon.value) {
                     damage = 0;
-                    gameMessage = `${card.suit}${card.rank}(${card.value})を無傷で倒した！`;
+                    gameMessage += ` ${card.suit}${card.rank}(${card.value})を無傷で倒した！`;
                 } else {
                     damage = card.value - equippedWeapon.value;
-                    gameMessage = `${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
+                    gameMessage += ` ${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
                 }
                 gameMessage += ` 武器(${equippedWeapon.suit}${equippedWeapon.rank})が壊れた。`;
                 equippedWeapon = null;
             } else {
-                gameMessage = `${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
+                gameMessage = (gameMessage.includes("呪い") ? gameMessage : "") + ` ${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
             }
             playerHp -= damage;
             break;
