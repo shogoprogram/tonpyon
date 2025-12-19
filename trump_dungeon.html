@@ -111,10 +111,12 @@
         .spades .card-face, .clubs .card-face { color: #333; }
         .hearts .card-face { color: #d9534f; }
         .diamonds .card-face { color: #428bca; }
+        .joker .card-face { color: #8a2be2; }
         
         .spades .card-type, .clubs .card-type { color: #333; }
         .hearts .card-type { color: #d9534f; }
         .diamonds .card-type { color: #428bca; }
+        .joker .card-type { color: #8a2be2; }
 
         #message-log {
             min-height: 40px;
@@ -180,6 +182,9 @@ function createDeck() {
             newDeck.push({ suit, rank, value: getCardValue(rank) });
         }
     }
+    // Add two jokers
+    newDeck.push({ suit: '🃏', rank: 'JOKER', value: 0 });
+    newDeck.push({ suit: '🃏', rank: 'JOKER', value: 0 });
     return newDeck;
 }
 
@@ -252,11 +257,16 @@ function renderGame() {
                 typeText = '武器';
                 valueText = `攻撃力: ${card.value}`;
                 break;
+            case '🃏':
+                cardDiv.classList.add('joker');
+                typeText = 'ジョーカー';
+                valueText = '場のカードを消す';
+                break;
         }
 
         cardDiv.classList.add('card');
         cardDiv.innerHTML = `
-            <div class="card-face">${card.suit}${card.rank}</div>
+            <div class="card-face">${card.suit}${card.rank === 'JOKER' ? '' : card.rank}</div>
             <div class="card-info">
                 <span class="card-type">${typeText}</span>
                 <span class="card-value">${valueText}</span>
@@ -308,6 +318,11 @@ function playCard(cardIndex) {
             // Weapon
             gameMessage = `${card.suit}${card.rank}(${card.value})を装備した。`;
             equippedWeapon = card;
+            break;
+
+        case '🃏':
+            gameMessage = "ジョーカーの効果で場のカードが消え去った！";
+            hand = []; // Discard the rest of the hand
             break;
     }
 
