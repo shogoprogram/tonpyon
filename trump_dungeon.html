@@ -5,10 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>トランプ・ダンジョン</title>
     <style>
+        :root {
+            --bg-color: #2c2c2c;
+            --text-color: #f0f0f0;
+            --container-bg: #383838;
+            --border-color: #555;
+            --accent-color: #5cb85c;
+            --accent-hover: #4cae4c;
+        }
         body {
             font-family: 'Helvetica Neue', 'Arial', sans-serif;
-            background-color: #2c2c2c;
-            color: #f0f0f0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -16,156 +24,217 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+            transition: background-color 0.3s;
         }
-        #game-container {
-            background-color: #383838;
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 640px;
+            background-color: var(--container-bg);
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-            width: 100%;
-            max-width: 640px;
         }
-        h1 {
+        .screen.active {
+            display: block;
+        }
+        h1, h2 {
             text-align: center;
-            color: #e0e0e0;
-            border-bottom: 2px solid #555;
+            border-bottom: 2px solid var(--border-color);
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
-        h2 {
-            text-align: center;
-            color: #ccc;
-            margin-bottom: 15px;
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
         }
+        .btn, .menu-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--accent-color);
+            color: white;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.2s;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+        }
+        .btn:hover, .menu-btn:hover {
+            background-color: var(--accent-hover);
+        }
+        .btn-secondary {
+            background-color: #777;
+        }
+        .btn-secondary:hover {
+            background-color: #666;
+        }
+
+        /* Game Screen Specific Styles */
         #player-stats {
             margin-bottom: 25px;
             padding: 15px;
-            border: 1px solid #555;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             background-color: #444;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 10px;
         }
-        .stat {
-            font-size: 1.1em;
-        }
-        .stat strong {
-            color: #fff;
-        }
-        #dungeon-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        #dungeon, #message-log {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #555;
-            border-radius: 8px;
-            background-color: #444;
-        }
-        #hand {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-        }
-        .card {
-            background: #fdfdfd;
-            border: 1px solid #999;
-            border-radius: 8px;
-            padding: 10px;
-            cursor: pointer;
-            width: 100px;
-            text-align: center;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 140px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 15px rgba(0,0,0,0.4);
-        }
-        .card-face {
-            font-size: 2.5em;
-            font-weight: bold;
-        }
-        .card-info {
-            font-size: 0.9em;
-        }
-        .card-type {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .card-value {
-            display: block;
-            font-size: 0.8em;
-            color: #555;
-        }
+        .stat { font-size: 1.1em; }
+        .stat strong { color: #fff; }
+        #dungeon-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        #dungeon, #message-log { margin-bottom: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: #444; }
+        #hand { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        .card { background: #fdfdfd; border: 1px solid #999; border-radius: 8px; padding: 10px; cursor: pointer; width: 100px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; justify-content: space-between; min-height: 140px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 10px 15px rgba(0,0,0,0.4); }
+        .card-face { font-size: 2.5em; font-weight: bold; }
+        .card-info { font-size: 0.9em; }
+        .card-type { display: block; font-weight: bold; margin-bottom: 5px; }
+        .card-value { display: block; font-size: 0.8em; color: #555; }
         .spades .card-face, .clubs .card-face { color: #333; }
         .hearts .card-face { color: #d9534f; }
         .diamonds .card-face { color: #428bca; }
         .joker .card-face { color: #8a2be2; }
-        
         .spades .card-type, .clubs .card-type { color: #333; }
         .hearts .card-type { color: #d9534f; }
         .diamonds .card-type { color: #428bca; }
         .joker .card-type { color: #8a2be2; }
+        #message-log { min-height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.1em; color: var(--text-color); }
+        
+        /* Color Picker */
+        .color-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .color-swatch { width: 100%; height: 50px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s; }
+        .color-swatch:hover { border-color: #fff; }
 
-        #message-log {
-            min-height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1em;
-            color: #fff;
-        }
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            background-color: #5cb85c;
-            color: white;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: background-color 0.2s;
-        }
-        .btn:hover {
-            background-color: #4cae4c;
-        }
+        /* Rules Screen */
+        #rules-content { padding: 10px; line-height: 1.6; }
     </style>
 </head>
 <body>
 
-<div id="game-container">
-    <h1>トランプ・ダンジョン</h1>
-    <div id="player-stats"></div>
-    <div id="dungeon">
-        <div id="dungeon-header">
-            <h2>ダンジョン</h2>
-            <button id="mulligan-btn" class="btn" onclick="mulligan()">マリガン</button>
+    <!-- Title Screen -->
+    <div id="title-screen" class="screen active">
+        <h1>トランプ・ダンジョン</h1>
+        <div class="menu-container">
+            <button class="menu-btn" onclick="runGame()">スタート</button>
+            <button class="menu-btn btn-secondary" onclick="showScreen('settings-screen')">設定</button>
         </div>
-        <div id="hand"></div>
     </div>
-    <div id="message-log"></div>
-</div>
+
+    <!-- Settings Screen -->
+    <div id="settings-screen" class="screen">
+        <h2>設定</h2>
+        <div class="menu-container">
+            <button class="menu-btn" onclick="showScreen('color-picker-screen')">背景色を変更</button>
+            <button class="menu-btn" onclick="showScreen('rules-screen')">ルール</button>
+            <button class="menu-btn btn-secondary" onclick="showScreen('title-screen')">戻る</button>
+        </div>
+    </div>
+
+    <!-- Rules Screen -->
+    <div id="rules-screen" class="screen">
+        <h2>ルール</h2>
+        <div id="rules-content">
+            <p>ダンジョンを生き延び、山札を全て引き切ればクリアです。</p>
+            <ul>
+                <li><strong>♠/♣ (敵):</strong> 戦って倒します。武器がないか、敵の攻撃力が武器より高いとダメージを受けます。戦闘後、武器は壊れます。</li>
+                <li><strong>♥ (回復):</strong> HPを回復します。</li>
+                <li><strong>♦ (武器):</strong> 装備して敵からのダメージを防ぎます。</li>
+                <li><strong>🃏 (ジョーカー):</strong> 場にある他のカードを全て消し去ります。</li>
+                <li><strong>マリガン:</strong> HPの半分をコストに、場の手札を全て引き直します。</li>
+            </ul>
+        </div>
+        <div class="menu-container">
+            <button class="menu-btn btn-secondary" onclick="showScreen('settings-screen')">戻る</button>
+        </div>
+    </div>
+
+    <!-- Color Picker Screen -->
+    <div id="color-picker-screen" class="screen">
+        <h2>背景色を選択</h2>
+        <div class="color-picker">
+            <div class="color-swatch" style="background-color: red;" onclick="changeBackgroundColor('red')"></div>
+            <div class="color-swatch" style="background-color: blue;" onclick="changeBackgroundColor('blue')"></div>
+            <div class="color-swatch" style="background-color: yellow;" onclick="changeBackgroundColor('yellow')"></div>
+            <div class="color-swatch" style="background-color: green;" onclick="changeBackgroundColor('green')"></div>
+            <div class="color-swatch" style="background-color: orange;" onclick="changeBackgroundColor('orange')"></div>
+            <div class="color-swatch" style="background-color: purple;" onclick="changeBackgroundColor('purple')"></div>
+            <div class="color-swatch" style="background-color: white;" onclick="changeBackgroundColor('white')"></div>
+            <div class="color-swatch" style="background-color: black;" onclick="changeBackgroundColor('black')"></div>
+            <div class="color-swatch" style="background-color: gray;" onclick="changeBackgroundColor('gray')"></div>
+        </div>
+        <div class="menu-container">
+            <button class="menu-btn btn-secondary" onclick="showScreen('settings-screen')">戻る</button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <div id="game-container">
+            <h1>トランプ・ダンジョン</h1>
+            <div id="player-stats"></div>
+            <div id="dungeon">
+                <div id="dungeon-header">
+                    <h2>ダンジョン</h2>
+                    <button id="mulligan-btn" class="btn" onclick="mulligan()">マリガン</button>
+                </div>
+                <div id="hand"></div>
+            </div>
+            <div id="message-log"></div>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="screen">
+        <h2>ゲームオーバー</h2>
+        <div class="menu-container">
+            <button class="menu-btn" onclick="runGame()">もう一度プレイ</button>
+            <button class="menu-btn btn-secondary" onclick="showScreen('title-screen')">タイトルへ</button>
+        </div>
+    </div>
+
+    <!-- Game Clear Screen -->
+    <div id="game-clear-screen" class="screen">
+        <h2>ゲームクリア！</h2>
+        <p style="text-align: center; margin-bottom: 20px;">おめでとうございます！ダンジョンを攻略しました。</p>
+        <div class="menu-container">
+            <button class="menu-btn" onclick="runGame()">もう一度プレイ</button>
+            <button class="menu-btn btn-secondary" onclick="showScreen('title-screen')">タイトルへ</button>
+        </div>
+    </div>
+
 
 <script>
 const suits = ['♠', '♣', '♥', '♦'];
 const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-const MAX_HP = 20; // Define max HP
+const MAX_HP = 20;
 
+// Game State
 let playerHp;
 let equippedWeapon;
 let deck;
 let hand;
 let gameMessage;
+
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+    document.getElementById(screenId).classList.add('active');
+}
+
+function changeBackgroundColor(color) {
+    const root = document.querySelector(':root');
+    const isDark = ['black', 'purple', '#2c2c2c', 'gray'].includes(color);
+    root.style.setProperty('--bg-color', color);
+    root.style.setProperty('--text-color', isDark ? '#f0f0f0' : '#333');
+    root.style.setProperty('--container-bg', isDark ? '#383838' : '#f0f0f0');
+    root.style.setProperty('--border-color', isDark ? '#555' : '#ccc');
+}
 
 function getCardValue(rank) {
     if (rank === 'A') return 1;
@@ -182,9 +251,7 @@ function createDeck() {
             newDeck.push({ suit, rank, value: getCardValue(rank) });
         }
     }
-    // Add two jokers
-    newDeck.push({ suit: '🃏', rank: 'JOKER', value: 0 });
-    newDeck.push({ suit: '🃏', rank: 'JOKER', value: 0 });
+    newDeck.push({ suit: '🃏', rank: 'JOKER', value: 0 }); // Add one joker
     return newDeck;
 }
 
@@ -195,20 +262,24 @@ function shuffleDeck(deckToShuffle) {
     }
 }
 
+function runGame() {
+    startGame();
+    showScreen('game-screen');
+}
+
 function startGame() {
-    playerHp = MAX_HP; // Initialize playerHp to MAX_HP
+    playerHp = MAX_HP;
     equippedWeapon = null;
     deck = createDeck();
     shuffleDeck(deck);
     hand = [];
     gameMessage = 'ラビダンジョンの冒険へようこそ！';
-    drawCards();
+    drawCards(); // This also renders the game
 }
 
 function drawCards() {
     if (deck.length === 0 && hand.length === 0) {
-        gameMessage = 'おめでとう！ダンジョンを攻略した！';
-        renderGame();
+        showScreen('game-clear-screen');
         return;
     }
     const cardsNeeded = 4 - hand.length;
@@ -220,7 +291,6 @@ function drawCards() {
 }
 
 function renderGame() {
-    // Player Stats
     const statsDiv = document.getElementById('player-stats');
     let weaponText = 'なし';
     if (equippedWeapon) {
@@ -232,7 +302,6 @@ function renderGame() {
         <div class="stat">山札残り: <strong>${deck.length}枚</strong></div>
     `;
 
-    // Hand (Dungeon)
     const handDiv = document.getElementById('hand');
     handDiv.innerHTML = '';
     hand.forEach((card, index) => {
@@ -241,56 +310,38 @@ function renderGame() {
         let valueText = '';
         
         switch (card.suit) {
-            case '♠':
-            case '♣':
+            case '♠': case '♣':
                 cardDiv.classList.add(card.suit === '♠' ? 'spades' : 'clubs');
-                typeText = '敵';
-                valueText = `攻撃力: ${card.value}`;
-                break;
+                typeText = '敵'; valueText = `攻撃力: ${card.value}`; break;
             case '♥':
                 cardDiv.classList.add('hearts');
-                typeText = '回復';
-                valueText = `回復量: ${card.value}`;
-                break;
+                typeText = '回復'; valueText = `回復量: ${card.value}`; break;
             case '♦':
                 cardDiv.classList.add('diamonds');
-                typeText = '武器';
-                valueText = `攻撃力: ${card.value}`;
-                break;
+                typeText = '武器'; valueText = `攻撃力: ${card.value}`; break;
             case '🃏':
                 cardDiv.classList.add('joker');
-                typeText = 'ジョーカー';
-                valueText = '場のカードを消す';
-                break;
+                typeText = 'ジョーカー'; valueText = '場のカードを消す'; break;
         }
 
         cardDiv.classList.add('card');
         cardDiv.innerHTML = `
             <div class="card-face">${card.suit}${card.rank === 'JOKER' ? '' : card.rank}</div>
-            <div class="card-info">
-                <span class="card-type">${typeText}</span>
-                <span class="card-value">${valueText}</span>
-            </div>
+            <div class="card-info"><span class="card-type">${typeText}</span><span class="card-value">${valueText}</span></div>
         `;
         cardDiv.onclick = () => playCard(index);
         handDiv.appendChild(cardDiv);
     });
 
-    // Message
-    const messageDiv = document.getElementById('message-log');
-    messageDiv.textContent = gameMessage;
+    document.getElementById('message-log').textContent = gameMessage;
 }
 
 function playCard(cardIndex) {
     if (playerHp <= 0 || !hand[cardIndex]) return;
-
-    const card = hand[cardIndex];
-    hand.splice(cardIndex, 1);
+    const card = hand.splice(cardIndex, 1)[0];
 
     switch (card.suit) {
-        case '♠':
-        case '♣':
-            // Enemy
+        case '♠': case '♣':
             let damage = card.value;
             if (equippedWeapon) {
                 if (card.value <= equippedWeapon.value) {
@@ -300,63 +351,58 @@ function playCard(cardIndex) {
                     damage = card.value - equippedWeapon.value;
                     gameMessage = `${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
                 }
-                gameMessage += ` 武器(${equippedWeapon.suit}${equippedWeapon.rank})が壊れた。`; // Weapon breaks every time an enemy is fought while equipped
+                gameMessage += ` 武器(${equippedWeapon.suit}${equippedWeapon.rank})が壊れた。`;
                 equippedWeapon = null;
             } else {
                 gameMessage = `${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
             }
             playerHp -= damage;
             break;
-
         case '♥':
-            // Heal
-            playerHp = Math.min(MAX_HP, playerHp + card.value); // Cap HP at MAX_HP
+            playerHp = Math.min(MAX_HP, playerHp + card.value);
             gameMessage = `${card.suit}${card.rank}(${card.value})を食べた。HPが${card.value}回復した。`;
             break;
-
         case '♦':
-            // Weapon
             gameMessage = `${card.suit}${card.rank}(${card.value})を装備した。`;
             equippedWeapon = card;
             break;
-
         case '🃏':
             gameMessage = "ジョーカーの効果で場のカードが消え去った！";
-            hand = []; // Discard the rest of the hand
+            hand = [];
             break;
     }
 
     if (playerHp <= 0) {
-        gameMessage += ' HPが0になった。ゲームオーバー...';
         playerHp = 0;
+        showScreen('game-over-screen');
+    } else {
+        drawCards();
     }
-
-    drawCards();
 }
 
 function mulligan() {
+    if (playerHp <= 0) return;
     if (deck.length < 4) {
         gameMessage = "山札が足りないのでマリガンできません。";
         renderGame();
         return;
     }
 
-    const hpLost = Math.ceil(playerHp / 2); // Calculate half HP, rounded up
+    const hpLost = Math.ceil(playerHp / 2);
     playerHp -= hpLost;
-
-    if (playerHp <= 0) {
-        gameMessage = `マリガンによりHPが${hpLost}減少し、HPが0になった。ゲームオーバー...`;
-        playerHp = 0;
-    } else {
-        gameMessage = `手札を交換した。HPが${hpLost}減少した。`;
-    }
+    gameMessage = `手札を交換した。HPが${hpLost}減少した。`;
     
-    hand = []; // Discard current hand
-    drawCards(); // Draw 4 new cards and render
+    if (playerHp <= 0) {
+        playerHp = 0;
+        showScreen('game-over-screen');
+    } else {
+        hand = [];
+        drawCards();
+    }
 }
 
-// Start the game
-startGame();
+// Initial load
+showScreen('title-screen');
 
 </script>
 </body>
