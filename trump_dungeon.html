@@ -325,7 +325,17 @@ function mulligan() {
         renderGame();
         return;
     }
-    gameMessage = "手札を交換した。";
+
+    const hpLost = Math.ceil(playerHp / 2); // Calculate half HP, rounded up
+    playerHp -= hpLost;
+
+    if (playerHp <= 0) {
+        gameMessage = `マリガンによりHPが${hpLost}減少し、HPが0になった。ゲームオーバー...`;
+        playerHp = 0;
+    } else {
+        gameMessage = `手札を交換した。HPが${hpLost}減少した。`;
+    }
+    
     hand = []; // Discard current hand
     drawCards(); // Draw 4 new cards and render
 }
