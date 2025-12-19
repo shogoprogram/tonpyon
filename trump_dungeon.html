@@ -21,25 +21,16 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
+            margin: 0; /* Ensure no margin on body */
             box-sizing: border-box;
             transition: background-color 0.3s;
         }
         .screen {
             display: none;
-            width: 100%;
-            max-width: 640px;
+            width: 100%; /* All screens take full width of their container */
         }
         .screen.active {
-            display: block;
-        }
-        #title-screen.active, 
-        #settings-screen.active,
-        #rules-screen.active,
-        #color-picker-screen.active,
-        #game-over-screen.active,
-        #game-clear-screen.active {
-            display: flex;
+            display: flex; /* Use flex for all active screens to easily center content */
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -47,7 +38,34 @@
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.4);
             background-color: var(--container-bg);
+            max-width: 640px; /* Default max-width for most screens */
         }
+
+        /* Fullscreen screens (Game Over, Game Clear) override max-width and background */
+        #game-over-screen, #game-clear-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 100;
+            display: none; /* Hidden by default */
+            flex-direction: column; /* Ensure flex for centering */
+            justify-content: center;
+            align-items: center;
+            padding: 0; /* No padding for fullscreen */
+            border-radius: 0; /* No border-radius for fullscreen */
+            box-shadow: none; /* No box-shadow for fullscreen */
+        }
+        #game-over-screen.active {
+            display: flex;
+            background-color: black; /* Specific background for game over */
+        }
+        #game-clear-screen.active {
+            display: flex;
+            background-color: rgba(0, 0, 0, 0.8); /* Specific background for game clear */
+        }
+
 
         h1, h2 {
             text-align: center;
@@ -88,10 +106,11 @@
 
         /* Game Screen Specific Styles */
         #game-screen.active {
+            max-width: 640px; /* Keep max-width for game screen container */
+            background-color: var(--container-bg);
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-            background-color: var(--container-bg);
         }
         #player-stats {
             margin-bottom: 25px;
@@ -133,18 +152,6 @@
         #rules-content { padding: 10px; line-height: 1.6; }
 
         /* Game Over Screen Specifics */
-        #game-over-screen {
-            background-color: black;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 100;
-        }
-        #game-over-screen.active {
-             display: flex;
-        }
         #game-over-screen h2.game-over-title {
             color: red;
             font-size: 3.5em;
@@ -153,11 +160,7 @@
             text-shadow: 0 0 10px red;
             animation: pulse 1.5s infinite alternate;
         }
-        #game-over-screen p.game-over-message {
-            color: white;
-            font-size: 1.8em;
-            margin-bottom: 40px;
-        }
+        /* No p.game-over-message now */
 
         @keyframes pulse {
             from { transform: scale(1); }
@@ -165,18 +168,6 @@
         }
         
         /* Game Clear Screen Specifics */
-        #game-clear-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 100;
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-        #game-clear-screen.active {
-            display: flex;
-        }
         #game-clear-screen h2 {
             color: gold;
             font-size: 3.5em;
