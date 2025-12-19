@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>トランプ・ダンジョン</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #game-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        #player-stats, #dungeon, #message-log {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #hand {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+        .card {
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 20px 10px;
+            cursor: pointer;
+            font-size: 1.2em;
+            width: 60px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+        }
+        .card.spades, .card.clubs { color: black; }
+        .card.hearts { color: red; }
+        .card.diamonds { color: blue; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>トランプ・ダンジョン</h1>
+    <div id="player-stats"></div>
+    <div id="dungeon">
+        <h2>ダンジョン</h2>
+        <div id="hand"></div>
+    </div>
+    <div id="message-log"></div>
+</div>
+
+<script>
+const suits = ['♠', '♣', '♥', '♦'];
+const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+let playerHp;
+let equippedWeapon;
+let deck;
+let hand;
+let gameMessage;
+
+function getCardValue(rank) {
+    if (rank === 'A') return 1;
+    if (rank === 'J') return 11;
+    if (rank === 'Q') return 12;
+    if (rank === 'K') return 13;
+    return parseInt(rank, 10);
+}
+
+function createDeck() {
+    const newDeck = [];
+    for (const suit of suits) {
+        for (const rank of ranks) {
+            newDeck.push({ suit, rank, value: getCardValue(rank) });
+        }
+    }
+    return newDeck;
+}
+
+function shuffleDeck(deckToShuffle) {
+    for (let i = deckToShuffle.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deckToShuffle[i], deckToShuffle[j]] = [deckToShuffle[j], deckToShuffle[i]];
+    }
+}
+
+function startGame() {
+    playerHp = 20;
+    equippedWeapon = null;
+    deck = createDeck();
+    shuffleDeck(deck);
+    hand = [];
+    gameMessage = 'ラビダンジョンの冒険へようこそ！';
+    drawCards();
+}
+
+function drawCards() {
+    if (deck.length === 0) {
+        gameMessage = 'おめでとう！ダンジョンを攻略した！';
+        hand = [];
+        renderGame();
+        return;
+    }
+    const cardsToDraw = Math.min(4, deck.length);
+    for (let i = 0; i < cardsToDraw; i++) {
+        hand.push(deck.pop());
+    }
+    renderGame();
+}
+
+function renderGame() {
+    // Player Stats
+    const statsDiv = document.getElementById('player-stats');
+    let weaponText = 'なし';
+    if (equippedWeapon) {
+        weaponText = `${equippedWeapon.suit}${equippedWeapon.rank} (攻撃力 ${equippedWeapon.value})`;
+    }
+    statsDiv.innerHTML = `HP: ${playerHp} | 武器: ${weaponText} | 山札残り: ${deck.length}枚`;
+
+    // Hand
+    const handDiv = document.getElementById('hand');
+    handDiv.innerHTML = '';
+    hand.forEach((card, index) => {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card';
+        if (card.suit === '♠') cardDiv.classList.add('spades');
+        if (card.suit === '♣') cardDiv.classList.add('clubs');
+        if (card.suit === '♥') cardDiv.classList.add('hearts');
+        if (card.suit === '♦') cardDiv.classList.add('diamonds');
+        cardDiv.innerHTML = `${card.suit}${card.rank}`;
+        cardDiv.onclick = () => playCard(index);
+        handDiv.appendChild(cardDiv);
+    });
+
+    // Message
+    const messageDiv = document.getElementById('message-log');
+    messageDiv.textContent = gameMessage;
+}
+
+function playCard(cardIndex) {
+    if (playerHp <= 0) return;
+
+    const card = hand[cardIndex];
+    hand.splice(cardIndex, 1);
+
+    switch (card.suit) {
+        case '♠':
+        case '♣':
+            // Enemy
+            let damage = card.value;
+            let weaponBroken = false;
+            if (equippedWeapon) {
+                if (card.value <= equippedWeapon.value) {
+                    damage = 0;
+                    gameMessage = `${card.suit}${card.rank}(${card.value})を無傷で倒した！`;
+                } else {
+                    damage = card.value - equippedWeapon.value;
+                    gameMessage = `${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
+                    // 武器破壊のルール：武器より強い敵を倒した時に壊れる
+                    gameMessage += ` 武器(${equippedWeapon.suit}${equippedWeapon.rank})が壊れた。`;
+                    equippedWeapon = null;
+                }
+            } else {
+                gameMessage = `${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
+            }
+            playerHp -= damage;
+            break;
+
+        case '♥':
+            // Heal
+            playerHp += card.value;
+            gameMessage = `${card.suit}${card.rank}(${card.value})を食べた。HPが${card.value}回復した。`;
+            break;
+
+        case '♦':
+            // Weapon
+            gameMessage = `${card.suit}${card.rank}(${card.value})を装備した。`;
+            equippedWeapon = card;
+            break;
+    }
+
+    if (playerHp <= 0) {
+        gameMessage += ' HPが0になった。ゲームオーバー...';
+        playerHp = 0;
+    }
+
+    if (hand.length === 0 && deck.length > 0) {
+        drawCards();
+    } else {
+        renderGame();
+    }
+}
+
+// Start the game
+startGame();
+
+</script>
+</body>
+</html>
