@@ -21,16 +21,16 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0; /* Ensure no margin on body */
+            margin: 0;
             box-sizing: border-box;
             transition: background-color 0.3s;
         }
         .screen {
             display: none;
-            width: 100%; /* All screens take full width of their container */
+            width: 100%;
         }
         .screen.active {
-            display: flex; /* Use flex for all active screens to easily center content */
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -38,10 +38,9 @@
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.4);
             background-color: var(--container-bg);
-            max-width: 640px; /* Default max-width for most screens */
+            max-width: 640px;
         }
 
-        /* Fullscreen screens (Game Over, Game Clear) override max-width and background */
         #game-over-screen, #game-clear-screen {
             position: fixed;
             top: 0;
@@ -49,23 +48,22 @@
             width: 100vw;
             height: 100vh;
             z-index: 100;
-            display: none; /* Hidden by default */
-            flex-direction: column; /* Ensure flex for centering */
+            display: none;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 0; /* No padding for fullscreen */
-            border-radius: 0; /* No border-radius for fullscreen */
-            box-shadow: none; /* No box-shadow for fullscreen */
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
         }
         #game-over-screen.active {
             display: flex;
-            background-color: black; /* Specific background for game over */
+            background-color: black;
         }
         #game-clear-screen.active {
             display: flex;
-            background-color: rgba(0, 0, 0, 0.8); /* Specific background for game clear */
+            background-color: rgba(0, 0, 0, 0.8);
         }
-
 
         h1, h2 {
             text-align: center;
@@ -104,9 +102,8 @@
             background-color: #666;
         }
 
-        /* Game Screen Specific Styles */
         #game-screen.active {
-            max-width: 640px; /* Keep max-width for game screen container */
+            max-width: 640px;
             background-color: var(--container-bg);
             padding: 20px;
             border-radius: 12px;
@@ -137,59 +134,32 @@
         .hearts .card-face { color: #d9534f; }
         .diamonds .card-face { color: #428bca; }
         .joker .card-face { color: #8a2be2; }
+        .curse .card-face { font-size: 3.5em; color: #5a0000; }
+        .curse { background: #111; border: 2px solid #5a0000; }
+        .curse .card-type, .curse .card-value { color: #ff9999; }
+        
         .spades .card-type, .clubs .card-type { color: #333; }
         .hearts .card-type { color: #d9534f; }
         .diamonds .card-type { color: #428bca; }
         .joker .card-type { color: #8a2be2; }
         #message-log { min-height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.1em; color: var(--text-color); }
         
-        /* Color Picker */
         .color-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; width:100%; max-width: 300px;}
         .color-swatch { width: 100%; height: 50px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s; }
         .color-swatch:hover { border-color: #fff; }
 
-        /* Rules Screen */
         #rules-content { padding: 10px; line-height: 1.6; }
 
-        /* Game Over Screen Specifics */
-        #game-over-screen h2.game-over-title {
-            color: red;
-            font-size: 3.5em;
-            margin-bottom: 15px;
-            border-bottom: none;
-            text-shadow: 0 0 10px red;
-            animation: pulse 1.5s infinite alternate;
-        }
-        /* No p.game-over-message now */
-
-        @keyframes pulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.05); }
-        }
+        #game-over-screen h2.game-over-title { color: red; font-size: 3.5em; margin-bottom: 15px; border-bottom: none; text-shadow: 0 0 10px red; animation: pulse 1.5s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
         
-        /* Game Clear Screen Specifics */
-        #game-clear-screen h2 {
-            color: gold;
-            font-size: 3.5em;
-            margin-bottom: 15px;
-            border-bottom: none;
-            text-shadow: 0 0 10px gold;
-            animation: pulse-gold 1.5s infinite alternate;
-        }
-        #game-clear-screen p {
-            color: white;
-            font-size: 1.8em;
-            margin-bottom: 40px;
-        }
-        @keyframes pulse-gold {
-            from { transform: scale(1); }
-            to { transform: scale(1.05); }
-        }
+        #game-clear-screen h2 { color: gold; font-size: 3.5em; margin-bottom: 15px; border-bottom: none; text-shadow: 0 0 10px gold; animation: pulse-gold 1.5s infinite alternate; }
+        #game-clear-screen p { color: white; font-size: 1.8em; margin-bottom: 40px; }
+        @keyframes pulse-gold { from { transform: scale(1); } to { transform: scale(1.05); } }
     </style>
 </head>
 <body>
 
-    <!-- Title Screen -->
     <div id="title-screen" class="screen active">
         <h1>トランプ・ダンジョン</h1>
         <div class="menu-container">
@@ -198,7 +168,6 @@
         </div>
     </div>
 
-    <!-- Settings Screen -->
     <div id="settings-screen" class="screen">
         <h2>設定</h2>
         <div class="menu-container">
@@ -208,7 +177,6 @@
         </div>
     </div>
 
-    <!-- Rules Screen -->
     <div id="rules-screen" class="screen">
         <h2>ルール</h2>
         <div id="rules-content">
@@ -218,7 +186,7 @@
                 <li><strong>♥ (回復):</strong> HPを回復します。</li>
                 <li><strong>♦ (武器):</strong> 装備して敵からのダメージを防ぎます。</li>
                 <li><strong>🃏 (ジョーカー):</strong> 場にある他のカードを全て消し去ります。</li>
-                <li><strong>♠Q (呪いのカード):</strong> 戦うを選択すると、戦闘前にHP-1と武器破壊のペナルティを受けます。</li>
+                <li><strong>詛 (呪いのカード):</strong> このカードを選ぶと呪われ、HPが5になります。</li>
                 <li><strong>マリガン:</strong> HPの半分をコストに、場の手札を全て引き直します。</li>
             </ul>
         </div>
@@ -227,7 +195,6 @@
         </div>
     </div>
 
-    <!-- Color Picker Screen -->
     <div id="color-picker-screen" class="screen">
         <h2>背景色を選択</h2>
         <div class="color-picker">
@@ -246,7 +213,6 @@
         </div>
     </div>
 
-    <!-- Game Screen -->
     <div id="game-screen" class="screen">
         <div id="game-container">
             <h1>トランプ・ダンジョン</h1>
@@ -262,7 +228,6 @@
         </div>
     </div>
 
-    <!-- Game Over Screen -->
     <div id="game-over-screen" class="screen">
         <h2 class="game-over-title">GAME OVER......</h2>
         <div class="menu-container">
@@ -271,7 +236,6 @@
         </div>
     </div>
 
-    <!-- Game Clear Screen -->
     <div id="game-clear-screen" class="screen">
         <h2>ゲームクリア！</h2>
         <p style="text-align: center; margin-bottom: 20px;">おめでとうございます！ダンジョンを攻略しました。</p>
@@ -287,7 +251,6 @@ const suits = ['♠', '♣', '♥', '♦'];
 const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 const MAX_HP = 20;
 
-// Game State
 let playerHp;
 let equippedWeapon;
 let deck;
@@ -301,38 +264,27 @@ function showScreen(screenId) {
     document.getElementById(screenId).classList.add('active');
 }
 
-// Function to convert hex to RGB (for luminance check)
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
+    return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
 }
 
 function changeBackgroundColor(color) {
     const root = document.querySelector(':root');
-    // Determine if the chosen background color is dark or light to set appropriate text/container colors
-    // Simple luminance check: (R*0.299 + G*0.587 + B*0.114) to determine perceived brightness
     let isDark = false;
-    if (['black', 'purple', '#2c2c2c', 'gray', 'blue', 'green'].includes(color)) { // Explicitly dark colors
+    if (['black', 'purple', '#2c2c2c', 'gray', 'blue', 'green'].includes(color)) {
         isDark = true;
     } else if (color.startsWith('#')) {
         const rgb = hexToRgb(color);
-        if (rgb) {
-            isDark = (rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114) < 186;
-        }
-    } else { // Handle named colors
+        if (rgb) { isDark = (rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114) < 186; }
+    } else {
         isDark = !(['white', 'yellow', 'orange'].includes(color));
     }
-    
     root.style.setProperty('--bg-color', color);
     root.style.setProperty('--text-color', isDark ? '#f0f0f0' : '#333');
-    root.style.setProperty('--container-bg', isDark ? '#383838' : '#e0e0e0'); // Slightly lighter container for light backgrounds
+    root.style.setProperty('--container-bg', isDark ? '#383838' : '#e0e0e0');
     root.style.setProperty('--border-color', isDark ? '#555' : '#ccc');
 }
-
 
 function getCardValue(rank) {
     if (rank === 'A') return 1;
@@ -350,6 +302,7 @@ function createDeck() {
         }
     }
     newDeck.push({ suit: '🃏', rank: 'JOKER', value: 0 }); // Add one joker
+    newDeck.push({ suit: '詛', rank: 'CURSE', value: 0 }); // Add one curse card
     return newDeck;
 }
 
@@ -372,7 +325,7 @@ function startGame() {
     shuffleDeck(deck);
     hand = [];
     gameMessage = 'ラビダンジョンの冒険へようこそ！';
-    drawCards(); // This also renders the game
+    drawCards();
 }
 
 function drawCards() {
@@ -420,11 +373,14 @@ function renderGame() {
             case '🃏':
                 cardDiv.classList.add('joker');
                 typeText = 'ジョーカー'; valueText = '場のカードを消す'; break;
+            case '詛':
+                cardDiv.classList.add('curse');
+                typeText = '呪いのカード'; valueText = 'HPが5になる'; break;
         }
 
         cardDiv.classList.add('card');
         cardDiv.innerHTML = `
-            <div class="card-face">${card.suit}${card.rank === 'JOKER' ? '' : card.rank}</div>
+            <div class="card-face">${card.suit}${card.rank === 'JOKER' || card.rank === 'CURSE' ? '' : card.rank}</div>
             <div class="card-info"><span class="card-type">${typeText}</span><span class="card-value">${valueText}</span></div>
         `;
         cardDiv.onclick = () => playCard(index);
@@ -438,36 +394,21 @@ function playCard(cardIndex) {
     if (playerHp <= 0 || !hand[cardIndex]) return;
     const card = hand.splice(cardIndex, 1)[0];
 
-    // Cursed card check
-    if (card.suit === '♠' && card.rank === 'Q') {
-        let curseMessage = "呪いのカードだ！ ";
-        playerHp -= 1; // Curse penalty: lose 1 HP
-        if (equippedWeapon) {
-            equippedWeapon = null; // Curse penalty: destroy weapon
-            curseMessage += "武器が壊され、HPを1失った！";
-        } else {
-            curseMessage += "呪いでHPを1失った！";
-        }
-        gameMessage = curseMessage;
-        // The card is still an enemy, so fall through to combat after curse is applied
-    }
-
-
     switch (card.suit) {
         case '♠': case '♣':
             let damage = card.value;
             if (equippedWeapon) {
                 if (card.value <= equippedWeapon.value) {
                     damage = 0;
-                    gameMessage += ` ${card.suit}${card.rank}(${card.value})を無傷で倒した！`;
+                    gameMessage = `${card.suit}${card.rank}(${card.value})を無傷で倒した！`;
                 } else {
                     damage = card.value - equippedWeapon.value;
-                    gameMessage += ` ${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
+                    gameMessage = `${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
                 }
                 gameMessage += ` 武器(${equippedWeapon.suit}${equippedWeapon.rank})が壊れた。`;
                 equippedWeapon = null;
             } else {
-                gameMessage = (gameMessage.includes("呪い") ? gameMessage : "") + ` ${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
+                gameMessage = `${card.suit}${card.rank}(${card.value})と戦い、${damage}のダメージを受けた...`;
             }
             playerHp -= damage;
             break;
@@ -482,6 +423,10 @@ function playCard(cardIndex) {
         case '🃏':
             gameMessage = "ジョーカーの効果で場のカードが消え去った！";
             hand = [];
+            break;
+        case '詛':
+            playerHp = 5;
+            gameMessage = "呪いのカードに触れてしまった！HPが5になった…";
             break;
     }
 
