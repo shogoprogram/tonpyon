@@ -157,6 +157,7 @@
 <script>
 const suits = ['♠', '♣', '♥', '♦'];
 const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+const MAX_HP = 30; // Define max HP
 
 let playerHp;
 let equippedWeapon;
@@ -190,7 +191,7 @@ function shuffleDeck(deckToShuffle) {
 }
 
 function startGame() {
-    playerHp = 20;
+    playerHp = MAX_HP; // Initialize playerHp to MAX_HP
     equippedWeapon = null;
     deck = createDeck();
     shuffleDeck(deck);
@@ -221,7 +222,7 @@ function renderGame() {
         weaponText = `${equippedWeapon.suit}${equippedWeapon.rank} (攻撃力 ${equippedWeapon.value})`;
     }
     statsDiv.innerHTML = `
-        <div class="stat">HP: <strong>${playerHp}</strong></div>
+        <div class="stat">HP: <strong>${playerHp}/${MAX_HP}</strong></div>
         <div class="stat">武器: <strong>${weaponText}</strong></div>
         <div class="stat">山札残り: <strong>${deck.length}枚</strong></div>
     `;
@@ -299,7 +300,7 @@ function playCard(cardIndex) {
 
         case '♥':
             // Heal
-            playerHp += card.value;
+            playerHp = Math.min(MAX_HP, playerHp + card.value); // Cap HP at MAX_HP
             gameMessage = `${card.suit}${card.rank}(${card.value})を食べた。HPが${card.value}回復した。`;
             break;
 
