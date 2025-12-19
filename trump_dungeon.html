@@ -186,7 +186,7 @@
                 <li><strong>♥ (回復):</strong> HPを回復します。</li>
                 <li><strong>♦ (武器):</strong> 装備して敵からのダメージを防ぎます。</li>
                 <li><strong>🃏 (ジョーカー):</strong> 場にある他のカードを全て消し去ります。</li>
-                <li><strong>詛 (呪いのカード):</strong> このカードを選ぶと呪われ、HPが5になります。</li>
+                <li><strong>詛 (呪いのカード):</strong> このカードを選ぶと呪われ、HPが5減少します。</li>
                 <li><strong>マリガン:</strong> HPの半分をコストに、場の手札を全て引き直します。</li>
             </ul>
         </div>
@@ -301,7 +301,7 @@ function createDeck() {
             newDeck.push({ suit, rank, value: getCardValue(rank) });
         }
     }
-    newDeck.push({ suit: '🃏', rank: 'JOKER', value: 0 }); // Add one joker
+    newDeck.push({ suit: '🃏', rank: 'JOKER', value: 0 });
     newDeck.push({ suit: '詛', rank: 'CURSE', value: 0 }); // Add one curse card
     return newDeck;
 }
@@ -335,6 +335,7 @@ function drawCards() {
     }
     const cardsNeeded = 4 - hand.length;
     const cardsToDraw = Math.min(cardsNeeded, deck.length);
+
     for (let i = 0; i < cardsToDraw; i++) {
         hand.push(deck.pop());
     }
@@ -375,7 +376,7 @@ function renderGame() {
                 typeText = 'ジョーカー'; valueText = '場のカードを消す'; break;
             case '詛':
                 cardDiv.classList.add('curse');
-                typeText = '呪いのカード'; valueText = 'HPが5になる'; break;
+                typeText = '呪いのカード'; valueText = 'HP-5'; break;
         }
 
         cardDiv.classList.add('card');
@@ -425,8 +426,8 @@ function playCard(cardIndex) {
             hand = [];
             break;
         case '詛':
-            playerHp = 5;
-            gameMessage = "呪いのカードに触れてしまった！HPが5になった…";
+            playerHp -= 5;
+            gameMessage = "呪いのカードに触れてしまった！HPを5失った…";
             break;
     }
 
