@@ -53,6 +53,12 @@
         .stat strong {
             color: #fff;
         }
+        #dungeon-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
         #dungeon, #message-log {
             margin-bottom: 20px;
             padding: 15px;
@@ -118,6 +124,19 @@
             font-size: 1.1em;
             color: #fff;
         }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #5cb85c;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background-color: #4cae4c;
+        }
     </style>
 </head>
 <body>
@@ -126,7 +145,10 @@
     <h1>トランプ・ダンジョン</h1>
     <div id="player-stats"></div>
     <div id="dungeon">
-        <h2>ダンジョン</h2>
+        <div id="dungeon-header">
+            <h2>ダンジョン</h2>
+            <button id="mulligan-btn" class="btn" onclick="mulligan()">マリガン</button>
+        </div>
         <div id="hand"></div>
     </div>
     <div id="message-log"></div>
@@ -183,7 +205,8 @@ function drawCards() {
         renderGame();
         return;
     }
-    const cardsToDraw = Math.min(4 - hand.length, deck.length);
+    const cardsNeeded = 4 - hand.length;
+    const cardsToDraw = Math.min(cardsNeeded, deck.length);
     for (let i = 0; i < cardsToDraw; i++) {
         hand.push(deck.pop());
     }
@@ -292,11 +315,18 @@ function playCard(cardIndex) {
         playerHp = 0;
     }
 
-    if (hand.length === 0) {
-        drawCards();
-    } else {
+    drawCards();
+}
+
+function mulligan() {
+    if (deck.length < 4) {
+        gameMessage = "山札が足りないのでマリガンできません。";
         renderGame();
+        return;
     }
+    gameMessage = "手札を交換した。";
+    hand = []; // Discard current hand
+    drawCards(); // Draw 4 new cards and render
 }
 
 // Start the game
